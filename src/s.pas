@@ -179,6 +179,7 @@ type
     actAbout: TAction;
     ClearLocks1: TMenuItem;
     actClearLocks: TAction;
+    UpgradeStatus: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -853,6 +854,9 @@ begin
       ToTbl.TableName := szTable;
       FromTbl.TableName := szMaster;
       try
+        FieldUpdate.QuickProgress := PBUpgrade;
+        FieldUpdate.QuickLabel := UpgradeStatus;
+        FieldUpdate.QuickStatus := true;
         FieldUpdate.ReadFromFile(szMaster);
         FieldUpdate.ApplyToFile(szTable);
         PBUpgrade.Position := PBUpgrade.Max;
@@ -1840,9 +1844,10 @@ var
   AliasParams: TStringList;
 begin
     sTemp := dbHelixDoctor.Directory;
-    Log(sActiveDbName,'Deleting Locks:',sTemp);
-    //FileDelete(sTemp + '\*.lck');
+    //Log(sActiveDbName,'Deleting Locks:',sTemp);
+    FileDelete(sTemp + '\*.lck');
       //sTemp:= doctorSession.NetFileDir;
+     // FileDelete(sTemp + '\*.lck');
       //sbInfo.SimpleText:=sTemp;
       //Log(sActiveDbName,'Deleting Netdir:',sTemp);
       //DeleteDirectory(stemp, false);

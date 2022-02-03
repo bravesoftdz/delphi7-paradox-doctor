@@ -60,7 +60,7 @@ interface
 
 uses
   SysUtils, Classes, bde, Dialogs, db, TypInfo, dbtables, inifiles,
-  scktcomp, stdctrls, comctrls,TUtil32,JclFileUtils,Forms;
+  scktcomp, stdctrls, comctrls,TUtil32,JclFileUtils,Forms,jclStrings;
 
 type
 
@@ -314,6 +314,11 @@ begin
        begin
         SetLength(FTableItem.aFldDesc, FTableItem.CursorProp.iFields);
         Check(DbiGetFieldDescs(hMaster, @FTableItem.aFldDesc[0]));
+        for I := 0 to length(FTableItem.aFldDesc) - 1 do
+        begin
+          if FTableItem.aFldDesc[i].iFldNum <> (i+1) then
+              FTableItem.aFldDesc[i].iFldNum := (i+1);
+        end
       end;
 
        if  FTableItem.CursorProp.iIndexes > 0 then
@@ -464,10 +469,11 @@ begin
             FieldDiff := True;
             for I := 0 to toFieldItems.Count - 1 do
             begin
-              FieldFound := toFieldItems.Items[I].FName = fromFieldItems.Items[J].FName;
+              FieldFound := StrCompare(toFieldItems.Items[I].FName,fromFieldItems.Items[J].FName,false) = 0;
               if FieldFound then
               begin
-                FieldDiff := CompareField(fromFieldItems.Items[J], toFieldItems.Items[I]) =  false ;
+                if  CompareField(fromFieldItems.Items[J], toFieldItems.Items[I] ) then
+                  FieldDiff := false ;
                 break;
               end;
             end;
@@ -479,7 +485,7 @@ begin
               AddField(Table, fromFieldItems.Items[J]);
             end;
           end;
-            DoOnProgress(Trunc((J / (fromFieldItems.Count - 1)) * 100), fromFieldItems.Items[J].FName);
+            DoOnProgress(Trunc((J / (fromFieldItems.Count)) * 100), fromFieldItems.Items[J].FName);
           end;
 
         CurrentField := '';
@@ -606,7 +612,10 @@ begin
     TProgressBar(FQuickProgress).Position := Percent;
   end;
   if (Assigned(FQuickLabel)) and (FQuickStatus) then
+  Begin
     TLabel(FQuickLabel).Caption := FieldName;
+    Application.ProcessMessages;
+  end;
   if Assigned(FOnProgress) then
     FOnProgress(Self, Percent, FieldName);
 end;
@@ -828,6 +837,7 @@ begin
   end;
 end;
 
+//returns true if they are the same
 function TFieldUpdate.CompareField(OldField: TFieldItem ; NewFieldItem: TFieldItem) : boolean ;
 begin
   result := false;
@@ -836,19 +846,18 @@ begin
     (OldField.FLength = NewFieldItem.FLength)  and
     (OldField.FHasValidation = NewFieldItem.FHasValidation) then
     begin
-      //ckeck if the default has changed.
+      //check if the default has changed.
       if(OldField.FHasValidation ) and ( NewFieldItem.FHasValidation  ) then
       begin
         if OldField.FVCHKDesc.bRequired = NewFieldItem.FVCHKDesc.bRequired and
           OldField.FVCHKDesc.bHasDefVal = NewFieldItem.FVCHKDesc.bHasDefVal  then
           //OldField.FVCHKDesc.aDefVal = NewFieldItem.FVCHKDesc.aDefVal and then
-        begin
-          result:=true;
-        end
+            result:=true;
       end
       else
       begin
-        result :=true;
+        if NewFieldItem.FHasValidation = true then
+          result :=true;
       end
     end;
 end;
