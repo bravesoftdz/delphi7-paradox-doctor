@@ -1,6 +1,6 @@
 object AboutBox: TAboutBox
-  Left = -6
-  Top = 125
+  Left = 504
+  Top = 236
   Width = 539
   Height = 83
   Caption = 'About'
@@ -15,7 +15,7 @@ object AboutBox: TAboutBox
   OnShow = FormShow
   DesignSize = (
     523
-    44)
+    45)
   PixelsPerInch = 96
   TextHeight = 13
   object versionString: TEdit
