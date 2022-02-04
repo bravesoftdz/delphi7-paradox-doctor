@@ -180,6 +180,7 @@ type
     ClearLocks1: TMenuItem;
     actClearLocks: TAction;
     UpgradeStatus: TLabel;
+    Panel8: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
