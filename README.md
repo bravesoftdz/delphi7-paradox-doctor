@@ -8,7 +8,7 @@ Updater tool for Merchant Magic™ from Cervelle Sofware.
 
 Cervelle Software develops and sells Merchant Magic™, the leading ATF-compliant Point of Sale (POS) Software for the firearms and sporting goods industries. Merchant Magic™ currently runs in hundreds of stores and ranges all over the United States. Our solid, affordable solution coupled with our knowledgeable and friendly customer service team has made us America's leading firearm software. 
 
-Merchant Magic™ is a Windows®-based POS software program that manages your business by providing complete inventory, customer, serial number, purchasing, receiving and sales tracking! 
+Merchant Magic™ is a Windows®-based POS software program that manages your business by providing complete inventory, customer, serial number, purchasing, receiving and sales tracking!
 
 ### Merchant Magic™ Features:   
 
