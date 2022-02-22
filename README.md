@@ -1,5 +1,6 @@
 ## DatabaseDoctor
 
+
 [![standard-readme compliant](https://img.shields.io/badge/language-pascal-yellow)](https://github.com/lucascavalierr/DatabaseDoctor)
 [![standard-readme compliant](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lucascavalierr/DatabaseDoctor/blob/main/LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/lucascavalierr/DatabaseDoctor)
