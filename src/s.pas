@@ -109,7 +109,6 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     edtTableName: TEdit;
-    Label9: TLabel;
     pbCancel: TButton;
     UpgradeButton: TButton;
     PBUpgrade: TProgressBar;
@@ -181,6 +180,10 @@ type
     actClearLocks: TAction;
     UpgradeStatus: TLabel;
     Panel8: TPanel;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -461,27 +464,28 @@ begin
   try
 
       tblTemp:=TTable.create(self);;
-    tblTemp.TableName := tableName;
-   tblTemp.open;
-   Check(DbiGetCursorProps(tblTemp.Handle, CursorProp));
-       with CursorProp do begin
-      TableInfo.Strings.Clear;
-      TableInfo.InsertRow(' ',' ',true);
-      TableInfo.InsertRow('Fields',IntToStr(iFields),true);
-      TableInfo.InsertRow('Record Size:',IntToStr(iRecBufSize),true);
-      TableInfo.InsertRow('Indexes:', IntToStr(iIndexes),true);
-      TableInfo.InsertRow('Validations:', InttoStr(iValChecks),true);
-      TableInfo.InsertRow('Refences:', IntToStr(iRefIntChecks),true);
-      TableInfo.InsertRow('Restructure Version:',IntToStr(iRestrVersion),true);
-      TableInfo.InsertRow('Aux Password:', IntToStr(iPasswords),true);
-      TableInfo.InsertRow('Code Page:', IntToStr(iCodePage),true);
-      TableInfo.InsertRow('Block Size:', IntToStr(iBlockSize),true);
-      TableInfo.InsertRow('Table Level:', IntToStr(iTblLevel),true);
-
-    end;
-  except
-    on EDBEngineError do
-      begin
+      tblTemp.TableName := tableName;
+      tblTemp.open;
+      Check(DbiGetCursorProps(tblTemp.Handle, CursorProp));
+      with CursorProp do begin
+        TableInfo.Strings.Clear;
+        TableInfo.InsertRow(' ',' ',true);
+        TableInfo.InsertRow(' ',' ',true);
+        TableInfo.InsertRow('Fields',IntToStr(iFields),true);
+        TableInfo.InsertRow('Indexes:', IntToStr(iIndexes),true);
+        TableInfo.InsertRow('Table Level:', IntToStr(iTblLevel),true);
+        TableInfo.InsertRow(' ',' ',true);
+        TableInfo.InsertRow('References:', IntToStr(iRefIntChecks),true);
+        TableInfo.InsertRow('Validations:', InttoStr(iValChecks),true);
+        TableInfo.InsertRow('Aux Password:', IntToStr(iPasswords),true);
+        TableInfo.InsertRow('Block Size:', IntToStr(iBlockSize),true);
+        TableInfo.InsertRow('Record Size:',IntToStr(iRecBufSize),true);
+        TableInfo.InsertRow('Code Page:', IntToStr(iCodePage),true);
+        TableInfo.InsertRow('Restructured Versions:',IntToStr(iRestrVersion),true);
+      end;
+    except
+      on EDBEngineError do
+        begin
             TableInfo.Strings.Clear;
             TableInfo.InsertRow(' ',' ',true);
             TableInfo.InsertRow('Fields',sBadData,true);

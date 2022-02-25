@@ -1,10 +1,6 @@
 ## DatabaseDoctor
 
-[![standard-readme compliant](https://img.shields.io/badge/language-pascal-yellow)](https://github.com/lucascavalierr/DatabaseDoctor)
-[![standard-readme compliant](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lucascavalierr/DatabaseDoctor/blob/main/LICENSE)
-[![standard-readme compliant](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/lucascavalierr/DatabaseDoctor)
-
-Updater tool for Merchant Magic™ from Cervelle Sofware.
+Cervelle Sofware's Merchant Magic™ Database Updater.
 
 Cervelle Software develops and sells Merchant Magic™, the leading ATF-compliant Point of Sale (POS) Software for the firearms and sporting goods industries. Merchant Magic™ currently runs in hundreds of stores and ranges all over the United States. Our solid, affordable solution coupled with our knowledgeable and friendly customer service team has made us America's leading firearm software. 
 
