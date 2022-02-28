@@ -143,7 +143,6 @@ type
     pumpSourceGroup: TGroupBox;
     pumpDiffGroup: TGroupBox;
     GroupBox1: TGroupBox;
-    Label3: TLabel;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
