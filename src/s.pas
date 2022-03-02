@@ -37,7 +37,6 @@ type
     DataBase2: TMenuItem;
     Verify2: TMenuItem;
     Rebuild2: TMenuItem;
-    sbInfo: TStatusBar;
     pcTable: TPageControl;
     tsStatus: TTabSheet;
     GroupBox3: TGroupBox;
@@ -339,13 +338,12 @@ end;
 procedure TMainForm.ClearBars;
 begin
 	PBFiles.Position :=0;
-  sbInfo.SimpleText := '';
+  //sbInfo.SimpleText := '';
   PBHeader.Position := 0;
   PBIndexes.Position := 0;
   PBData.Position := 0;
   PBRebuild.Position := 0;
   PBUpgrade.Position := 0;
-
 end;
 
 procedure TMainForm.ClearLabels;
@@ -365,6 +363,7 @@ begin
   actVerifyTable.Enabled := False;
   actRebuildTable.Enabled := False;
   actUpgrade.Enabled := False;
+  pbCancel.Enabled := False;
     actValidateTable.Enabled := False;
 end;
 
@@ -379,6 +378,7 @@ begin
   actRebuildTable.Enabled := True;
   actUpgrade.Enabled := True;
   actValidateTable.Enabled := True;
+  pbCancel.Enabled := True;
 
 end;
 
@@ -428,11 +428,11 @@ procedure TMainForm.SetTableInfo;
     begin
       edtMaster.Text := sMasterDbName;
       actUpgrade.Enabled := True;
-
+      pbCancel.Enabled := True;
       SetTableInfo(upgradetableinfo,sMasterDbName);
       FillGrids( sMasterDbName, upgradeindexgrid, UpgradeFieldsGrid);
-      upgradeindexGroup.Caption:='Upgrade Indexes: '+ inttostr(upgradeindexgrid.RowCount-1);
-      UpgradeFieldsGroup.Caption:='Upgrade Fields: '+inttostr(UpgradeFieldsGrid.RowCount-1);
+      upgradeindexGroup.Caption:='MasterDB Table Index Count: '+ inttostr(upgradeindexgrid.RowCount-1);
+      UpgradeFieldsGroup.Caption:='MasterDB Table Field Count: '+inttostr(UpgradeFieldsGrid.RowCount-1);
 
       upgradeindexgroup.Visible :=true;
       UpgradeFieldsGroup.Visible :=true;
@@ -448,8 +448,8 @@ procedure TMainForm.SetTableInfo;
       UpgradeInfoGroup.Visible :=false;
     end;
       FillGrids( sActiveDbName, indexgrid, fieldsGrid);
-      indexGroup.Caption:='Indexes: '+inttostr(indexgrid.RowCount-1);
-      FieldsGroup.Caption:='Fields: '+inttostr(FieldsGrid.RowCount-1);
+      indexGroup.Caption:='Table Index Count: '+inttostr(indexgrid.RowCount-1);
+      FieldsGroup.Caption:='Table Field Count: '+inttostr(FieldsGrid.RowCount-1);
  end;
 
 
@@ -468,7 +468,7 @@ begin
       Check(DbiGetCursorProps(tblTemp.Handle, CursorProp));
       with CursorProp do begin
         TableInfo.Strings.Clear;
-        TableInfo.InsertRow(' ',' ',true);
+        TableInfo.InsertRow('Record Count:', IntToStr(tblTemp.recordcount),true);
         TableInfo.InsertRow(' ',' ',true);
         TableInfo.InsertRow('Fields',IntToStr(iFields),true);
         TableInfo.InsertRow('Indexes:', IntToStr(iIndexes),true);
@@ -478,7 +478,7 @@ begin
         TableInfo.InsertRow('Validations:', InttoStr(iValChecks),true);
         TableInfo.InsertRow('Aux Password:', IntToStr(iPasswords),true);
         TableInfo.InsertRow('Block Size:', IntToStr(iBlockSize),true);
-        TableInfo.InsertRow('Record Size:',IntToStr(iRecBufSize),true);
+        TableInfo.InsertRow('Table Size:',IntToStr(iRecBufSize),true);
         TableInfo.InsertRow('Code Page:', IntToStr(iCodePage),true);
         TableInfo.InsertRow('Restructured Versions:',IntToStr(iRestrVersion),true);
       end;
@@ -787,7 +787,7 @@ begin
 	ClearBars;
   timerStart();
 	TableVerify(sActiveDbName,sTemp);
-	sbInfo.SimpleText:=sTemp;
+	//sbInfo.SimpleText:=sTemp;
    Log(sActiveDbName,'Verify',sTemp);
 end;
 
@@ -840,8 +840,8 @@ begin
    FieldUpdate.RestructureTable(sActiveDbName, 'LEVEL', '7');
    TableRebuildIndexes( sActiveDbName);
    TableRebuild(sActiveDbName,sTemp);
-   sbInfo.SimpleText:=sTemp;
-   Log(sActiveDbName,'Rebuild',sTemp);
+   ClearBars;
+   ShowMessage('Rebuild Complete!');
 end;
 
 function TMainForm.TableUpgrade(szTable:string;szMaster: String;var sResultString:string):integer;
@@ -1114,7 +1114,7 @@ begin
         SetTableAndDir(FALSE);
       	if TableVerify(sActiveDbName,sTemp)= 0 then
         	lbTables.Checked[iI]:= False;
-				sbInfo.SimpleText:=sTemp;
+				//sbInfo.SimpleText:=sTemp;
    			Log(sActiveDbName,'Verify Checked',sTemp);
       	pbFiles.Position:=pbFiles.Position+1;
 	      application.processmessages;
@@ -1182,12 +1182,12 @@ begin
         begin
  					if CopyDbTable(DB, SrcDir+tableList[i]+'.db', dstFile, FALSE) = 0 then
 					begin
-        		sbInfo.SimpleText:=tableList[i];
+        		//sbInfo.SimpleText:=tableList[i];
    					Log(dstFile,'Table Creation','Table Added');
 					end
           else
           begin
-            sbInfo.SimpleText:=tableList[i];
+            //sbInfo.SimpleText:=tableList[i];
    					Log(dstFile,'Table Creation','Table Not Added');
           end;
 
@@ -1320,7 +1320,7 @@ try
      bmFix.Execute;										// Perform BatchMove
      result:=1;
      TableRebuildDuplicate(sFromTable,sToTable,sTemp);
-     sbInfo.SimpleText:=sTemp;
+     //sbInfo.SimpleText:=sTemp;
 //		tblTo.close;
 //   	tblFrom.close;
 //	PutBack the autoincrement
@@ -1380,7 +1380,9 @@ end;
 
 procedure TMainForm.pbCancelClick(Sender: TObject);
 begin
-	pbCancel.tag:=1;
+  ClearBars;
+  ShowMessage('Program has been terminated!');
+  Application.Terminate;
 end;
 
 procedure TMainForm.btnClearClick(Sender: TObject);
@@ -1446,7 +1448,7 @@ begin
          SetTableAndDir(FALSE);
          if TableVerify(sActiveDbName,sTemp)= 0 then
              lbTables.Checked[iI]:= False;
-			sbInfo.SimpleText:=sTemp;
+			//sbInfo.SimpleText:=sTemp;
    		Log(sActiveDbName,'Rebuild Checked',sTemp);
       	pbFiles.Position:=pbFiles.Position+1;
 	      application.processmessages;
@@ -1458,7 +1460,8 @@ begin
    end;
    end;
    pbFiles.Position:=pbFiles.Max;
-
+   ClearBars;
+   ShowMessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actClearLogExecute(Sender: TObject);
@@ -1494,8 +1497,8 @@ begin
     TimerStart;
 		TableUpgrade(sActiveDbName, sMAsterDbName,sTemp);
     SetTableInfo;
-    sbInfo.SimpleText:=sTemp;
-    Log(sActiveDbName,'Upgrade',sTemp);
+    ClearBars;
+    ShowMessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actCheckAllExecute(Sender: TObject);
@@ -1558,12 +1561,12 @@ begin
             TimerStart;
       	    if TableUpgrade(sActiveDbName, sMasterDbName,sTemp) = 1 then
               lbTables.Checked[iI]:= False;
-            sbInfo.SimpleText:=sTemp;
+            //sbInfo.SimpleText:=sTemp;
             Log(sActiveDbName,'Upgrade Checked',sTemp);
          end
          else
          begin
-         		  sbInfo.SimpleText:='Upgrade Skipped; Not in master Db';
+         		  //sbInfo.SimpleText:='Upgrade Skipped; Not in master Db';
    		        Log(sActiveDbName,'Upgrade Skipped',edtMaster.Text);
          end ;
 
@@ -1577,7 +1580,8 @@ begin
    end;
    end;
    pbFiles.Position:=pbFiles.Max;
-
+   ClearBars;
+   ShowMessage('Update Complete!');
 end;
 
 procedure TMainForm.actUpgradeDatabaseExecute(Sender: TObject);
@@ -1587,12 +1591,16 @@ begin
   actUpgradeCheckedExecute(self);
   AliasComboChange(Sender);
   //SetTableAndDir(false);
+  ClearBars;
+  ShowMessage('Update Complete!');
   end;
 
 procedure TMainForm.actRebuildDatabaseExecute(Sender: TObject);
 begin
   actCheckAllExecute(self);
   actRebuildCheckedExecute(self);
+  ClearBars;
+  ShowMessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actClearMasterDbExecute(Sender: TObject);
@@ -1639,7 +1647,7 @@ begin
         table.EmptyTable;
 
         //table.active:=true;
-        	sbInfo.SimpleText:=tableList[i];
+        	//sbInfo.SimpleText:=tableList[i];
           Log(sActiveDbName,'Table Cleared','Succesfully Cleared');
      			pbFiles.Position:=pbFiles.Position+1;
       end ;
@@ -1756,12 +1764,12 @@ end;
 
 procedure TMainForm.ToSrcDataChange(Sender: TObject; Field: TField);
 begin
-       pumpDestinationGroup.Caption := 'To:' + inttostr(toTbl.RecordCount) ;
+       pumpDestinationGroup.Caption := 'Table Record Count: ' + inttostr(toTbl.RecordCount);
 end;
 
 procedure TMainForm.FromSrcDataChange(Sender: TObject; Field: TField);
 begin
-      pumpSourceGroup.Caption := 'From:' + inttostr(fromTbl.RecordCount) ;
+      pumpSourceGroup.Caption := 'PumpDB Table Record Count: ' + inttostr(fromTbl.RecordCount);
 end;
 
 procedure TMainForm.Panel7Resize(Sender: TObject);
@@ -1776,7 +1784,7 @@ begin
  ClearBars;
   timerStart();
   TableValidate(globals.sActiveDbName,sTemp);
-	sbInfo.SimpleText:=sTemp;
+	//sbInfo.SimpleText:=sTemp;
   Log(sActiveDbName,'Validate',sTemp);
 end;
 
@@ -1802,7 +1810,7 @@ begin
          if TableValidate(sActiveDbName,sTemp) = 1 then
          begin
             lbTables.Checked[iI]:= False;
-            sbInfo.SimpleText:=sTemp;
+            //sbInfo.SimpleText:=sTemp;
             Log(sActiveDbName,'Validate Checked',sTemp);
          end;
       pbFiles.Position:=pbFiles.Position+1;
