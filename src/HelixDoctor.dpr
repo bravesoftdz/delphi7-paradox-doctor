@@ -1,7 +1,5 @@
 program HelixDoctor;
 
-
-
 uses
   Forms,
   s in 's.pas' {MainForm},
@@ -17,7 +15,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Cervelle Data Doctor';
+  Application.Title := 'Cervelle Software - Database Doctor';
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TfrmBatchMove, frmBatchMove);
   Application.CreateForm(TAboutBox, AboutBox);

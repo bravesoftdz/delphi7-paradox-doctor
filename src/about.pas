@@ -4,12 +4,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls;
+  Dialogs, StdCtrls, ExtCtrls, jpeg;
 
 type
   TAboutBox = class(TForm)
-    versionString: TEdit;
-    Button1: TButton;
+    Image1: TImage;
+    Memo1: TMemo;
+    Memo2: TMemo;
+    Memo3: TMemo;
+    Memo4: TMemo;
+    Memo5: TMemo;
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }
@@ -67,7 +71,7 @@ var
 x:string;
 begin
    GetExeVersion(x);
-   versionstring.Text := x;
+   //versionstring.Text := x;
 end;
 
 end.

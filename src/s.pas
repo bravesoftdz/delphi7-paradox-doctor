@@ -7,7 +7,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, DB, BDE, TUtil32, DBTables, Menus, FileCtrl,
   Grids, DBCtrls, DBGrids, ActnList, Buttons, CheckLst,BatchMove,xautils,
-  FieldUpdate,JclFileUtils, ValEdit, bdeutil;
+  FieldUpdate,JclFileUtils, ValEdit, bdeutil, jpeg;
 
 type
 
@@ -182,6 +182,8 @@ type
     N5: TMenuItem;
     N6: TMenuItem;
     N7: TMenuItem;
+    N8: TMenuItem;
+    Image1: TImage;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -269,6 +271,8 @@ type
 
   public
     { Public declarations }
+    gCountPre : String;
+    gCountPost : String;
   end;
 
  
@@ -364,7 +368,7 @@ begin
   actRebuildTable.Enabled := False;
   actUpgrade.Enabled := False;
   pbCancel.Enabled := False;
-    actValidateTable.Enabled := False;
+  actValidateTable.Enabled := False;
 end;
 
 procedure TMainForm.SetTable(TableName: String);
@@ -373,13 +377,11 @@ begin
   pumperTable.Text:=  TableName;
   tablelocation.Text := TableName;
 
-
   actVerifyTable.Enabled := True;
   actRebuildTable.Enabled := True;
   actUpgrade.Enabled := True;
   actValidateTable.Enabled := True;
   pbCancel.Enabled := True;
-
 end;
 
 procedure TMainForm.SetToPerformAction;
@@ -388,7 +390,6 @@ begin
   	tblTemp.Close;
   pcTable.ActivePage := tsStatus ;
   ClearBars;
-
 end;
 
 
@@ -779,6 +780,7 @@ begin
 	qrySql.Sql.clear;
 	qrySql.Sql:=memoSql.Lines;
 	qrySql.open;
+  ShowMessage('SQL Query posted!');
 end;
 
 procedure TMainForm.actVerifyTableExecute(Sender: TObject);
@@ -835,13 +837,24 @@ begin
     qrySql.close;
     tblTemp.close;
     fromtbl.Close;
-    totbl.Close;
-   ClearBars;
-   FieldUpdate.RestructureTable(sActiveDbName, 'LEVEL', '7');
-   TableRebuildIndexes( sActiveDbName);
-   TableRebuild(sActiveDbName,sTemp);
-   ClearBars;
-   ShowMessage('Rebuild Complete!');
+
+    ToTbl.Active := True;
+    gCountPre := inttostr(ToTbl.RecordCount);
+    ToTbl.Active := False;
+    ToTbl.Close;
+
+    ClearBars;
+    FieldUpdate.RestructureTable(sActiveDbName, 'LEVEL', '7');
+    TableRebuildIndexes( sActiveDbName);
+    TableRebuild(sActiveDbName,sTemp);
+    ClearBars;
+
+    ToTbl.Active := True;
+    gCountPost := inttostr(ToTbl.RecordCount);
+    ToTbl.Active := False;
+    ToTbl.Close;
+    ShowMessage('Rebuild Complete!');
+    ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
 end;
 
 function TMainForm.TableUpgrade(szTable:string;szMaster: String;var sResultString:string):integer;
@@ -853,8 +866,9 @@ begin
   try
   	begin
       FromTbl.Active := False;
+      ToTbl.Active := True;
+      gCountPre := inttostr(ToTbl.RecordCount);
       ToTbl.Active := False;
-
       ToTbl.TableName := szTable;
       FromTbl.TableName := szMaster;
       try
@@ -864,7 +878,6 @@ begin
         FieldUpdate.ReadFromFile(szMaster);
         FieldUpdate.ApplyToFile(szTable);
         PBUpgrade.Position := PBUpgrade.Max;
-
         TableUpgrade:=1;
         sResultString := 'Upgrade was successful.' ;
       except
@@ -873,6 +886,9 @@ begin
       end;
   finally
     Screen.Cursor := crDefault;
+    ToTbl.Active := True;
+    gCountPost := inttostr(ToTbl.RecordCount);
+     ToTbl.Active := False;
   end;
 end;
 
@@ -1462,6 +1478,7 @@ begin
    pbFiles.Position:=pbFiles.Max;
    ClearBars;
    ShowMessage('Rebuild Complete!');
+   ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
 end;
 
 procedure TMainForm.actClearLogExecute(Sender: TObject);
@@ -1498,7 +1515,8 @@ begin
 		TableUpgrade(sActiveDbName, sMAsterDbName,sTemp);
     SetTableInfo;
     ClearBars;
-    ShowMessage('Rebuild Complete!');
+    ShowMessage('Update Complete!');
+    ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
 end;
 
 procedure TMainForm.actCheckAllExecute(Sender: TObject);
@@ -1582,6 +1600,7 @@ begin
    pbFiles.Position:=pbFiles.Max;
    ClearBars;
    ShowMessage('Update Complete!');
+   ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
 end;
 
 procedure TMainForm.actUpgradeDatabaseExecute(Sender: TObject);
@@ -1593,6 +1612,7 @@ begin
   //SetTableAndDir(false);
   ClearBars;
   ShowMessage('Update Complete!');
+  ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
   end;
 
 procedure TMainForm.actRebuildDatabaseExecute(Sender: TObject);
@@ -1601,6 +1621,7 @@ begin
   actRebuildCheckedExecute(self);
   ClearBars;
   ShowMessage('Rebuild Complete!');
+  ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
 end;
 
 procedure TMainForm.actClearMasterDbExecute(Sender: TObject);
