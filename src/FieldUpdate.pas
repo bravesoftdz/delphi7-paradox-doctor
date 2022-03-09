@@ -98,7 +98,7 @@ type
     procedure SetOnError(const Value: TOnError);
     procedure AddField(Table: TTable; NewFieldItem: TFieldItem);
     procedure ChangeField(Table: TTable; NewFieldItem: TFieldItem  ;OldFieldItem: TFieldItem);
-    function CompareField(OldField: TFieldItem ; NewFieldItem: TFieldItem) : boolean ; 
+    function CompareField(OldField: TFieldItem ; NewFieldItem: TFieldItem) : boolean ;
     function FieldTypeToBDEFieldInt(TableType : TTableType; FieldType: TFieldType): Word;
     function GetTableType(Table: TTable): TTableType;
     function FieldTypeToString(FieldType : TFieldType) : String;
@@ -354,9 +354,11 @@ begin
         FFieldItems.Items[I].FFldDesc :=  FTableItem.aFldDesc[I];
         FFieldItems.Items[I].FName := Table.FieldDefs.Items[I].Name;
         FFieldItems.Items[I].FType := Table.FieldDefs.Items[I].DataType;
+
         FFieldItems.Items[I].FPrecision := Table.FieldDefs.Items[I].Precision;
         FFieldItems.Items[I].FLength := Table.FieldDefs.Items[I].Size;
         FFieldItems.Items[I].FHasValidation := false;
+
             
         if  FTableItem.CursorProp.iValChecks > 0 then
         begin
@@ -743,6 +745,7 @@ begin
   //MyChangeRec.iType := FieldTypeToBDEFieldInt(GetTableType(Table), NewFieldItem.FType);
 
   MyChangeRec.iType := NewFieldItem.FFldDesc.iFldType;
+  MyChangeRec.iSubType := NewFieldItem.FFldDesc.iSubType;
   if NewFieldItem.FLength <> 0 then
     MyChangeRec.iLength := NewFieldItem.FLength;
   if NewFieldItem.FPrecision <> 0 then
@@ -1375,7 +1378,6 @@ begin
     end
   else
     ShowMessage('Could not copy the table. It is not in the location specified.');
-
 end;
 
 // Purpose: Use the pOptData portion of DbiDoRestructure.

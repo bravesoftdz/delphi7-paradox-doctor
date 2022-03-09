@@ -838,23 +838,14 @@ begin
     tblTemp.close;
     fromtbl.Close;
 
-    ToTbl.Active := True;
-    gCountPre := inttostr(ToTbl.RecordCount);
-    ToTbl.Active := False;
     ToTbl.Close;
-
     ClearBars;
     FieldUpdate.RestructureTable(sActiveDbName, 'LEVEL', '7');
     TableRebuildIndexes( sActiveDbName);
     TableRebuild(sActiveDbName,sTemp);
     ClearBars;
-
-    ToTbl.Active := True;
-    gCountPost := inttostr(ToTbl.RecordCount);
-    ToTbl.Active := False;
     ToTbl.Close;
-    ShowMessage('Rebuild Complete!');
-    ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
+    Showmessage('Rebuild Complete!');
 end;
 
 function TMainForm.TableUpgrade(szTable:string;szMaster: String;var sResultString:string):integer;
@@ -866,9 +857,6 @@ begin
   try
   	begin
       FromTbl.Active := False;
-      ToTbl.Active := True;
-      gCountPre := inttostr(ToTbl.RecordCount);
-      ToTbl.Active := False;
       ToTbl.TableName := szTable;
       FromTbl.TableName := szMaster;
       try
@@ -886,9 +874,6 @@ begin
       end;
   finally
     Screen.Cursor := crDefault;
-    ToTbl.Active := True;
-    gCountPost := inttostr(ToTbl.RecordCount);
-     ToTbl.Active := False;
   end;
 end;
 
@@ -1289,11 +1274,12 @@ try
       begin
          tblTo.FieldDefs.AddFieldDef;
          tblTo.FieldDefs.items[i]:=FieldDefs.items[i];
-      	if FieldDefs.Items[i].DataType = ftAutoInc then //	Auto-incrementing 32-bit integer counter field
-      	begin
-         	tblTo.FieldDefs.Items[i].DataType :=ftInteger;   //change it to and integer
-            iIndexToModify:=i;
-         end;
+      	//if FieldDefs.Items[i].DataType = ftAutoInc then //	Auto-incrementing 32-bit integer counter field
+      	//begin
+          // HERE
+         	//tblTo.FieldDefs.Items[i].DataType :=ftInteger;   //change it to and integer
+          //iIndexToModify:=i;
+         //end;
       end;
 //	with tblFrom do
    begin
@@ -1477,8 +1463,7 @@ begin
    end;
    pbFiles.Position:=pbFiles.Max;
    ClearBars;
-   ShowMessage('Rebuild Complete!');
-   ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
+   Showmessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actClearLogExecute(Sender: TObject);
@@ -1515,8 +1500,7 @@ begin
 		TableUpgrade(sActiveDbName, sMAsterDbName,sTemp);
     SetTableInfo;
     ClearBars;
-    ShowMessage('Update Complete!');
-    ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
+    Showmessage('Update Complete!');
 end;
 
 procedure TMainForm.actCheckAllExecute(Sender: TObject);
@@ -1599,8 +1583,7 @@ begin
    end;
    pbFiles.Position:=pbFiles.Max;
    ClearBars;
-   ShowMessage('Update Complete!');
-   ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
+   Showmessage('Update Complete!');
 end;
 
 procedure TMainForm.actUpgradeDatabaseExecute(Sender: TObject);
@@ -1609,10 +1592,8 @@ begin
   actCheckAllExecute(self);
   actUpgradeCheckedExecute(self);
   AliasComboChange(Sender);
-  //SetTableAndDir(false);
   ClearBars;
-  ShowMessage('Update Complete!');
-  ShowMessage('Record count BEFORE update: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER update: ' + gCountPost);
+  Showmessage('Update Complete!');
   end;
 
 procedure TMainForm.actRebuildDatabaseExecute(Sender: TObject);
@@ -1620,8 +1601,7 @@ begin
   actCheckAllExecute(self);
   actRebuildCheckedExecute(self);
   ClearBars;
-  ShowMessage('Rebuild Complete!');
-  ShowMessage('Record count BEFORE rebuild: ' + gCountPre + sLineBreak + sLineBreak + 'Record count AFTER rebuild: ' + gCountPost);
+  Showmessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actClearMasterDbExecute(Sender: TObject);
@@ -1697,20 +1677,12 @@ if ParamCount > 0 then
 begin
   if FindCmdLineSwitch('UPGRADE') then
   begin
-    if not FindCmdLineSwitch('SILENT') then
-      ShowMessage('This will update your Merchant Magic database') ;
-
     self.Enabled := false ;
     self.actUpgradeDatabaseExecute(self) ;
     self.Close;
   end;
 end;
-//	for i := 1 to ParamCount do
-//  ShowMessage(ParamStr(i));
-
-
 end;
-
 
 procedure TMainForm.infoPanelResize(Sender: TObject);
 begin
