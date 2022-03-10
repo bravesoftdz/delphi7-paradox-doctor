@@ -767,11 +767,15 @@ end;
 
 procedure TMainForm.tsDataEnter(Sender: TObject);
 begin
-	try
+  try
  		If not tblTemp.Active then
- 		tblTemp.Open;
-    except
+      tblTemp.Open;
+  except
+    on EDatabaseError do
+    begin
+      showmessage('Please select table first!');
     end;
+  end;
 end;
 
 procedure TMainForm.btnGoClick(Sender: TObject);
@@ -1691,15 +1695,9 @@ end;
 
 procedure TMainForm.pcTableChange(Sender: TObject);
 begin
-  //if pcTable.ActivePage =  tsFields then
-  //  FillGrids( sActiveDbName, fieldsGrid, upgradeFieldsGrid);
-
-   //   if pcTable.ActivePage =  tsIndex then
-  //  FillGrids( sActiveDbName, indexGrid, upgradeIndexGrid);
-
      if pcTable.ActivePage =  tsData then
      begin
-      tblTemp.Open;
+      tblTemp.Open
      end;
 
   if pcTable.ActivePage =  tsPumper then
