@@ -9,6 +9,7 @@ var
   sMasterDbName: string;
   sActiveDbName:string;
   sMasterPath: String;
+  sPumperPath: String;
   sDoctorDb: String ;
 
   Stopwatch: TJclCounter;

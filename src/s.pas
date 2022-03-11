@@ -142,12 +142,11 @@ type
     pumpSourceGroup: TGroupBox;
     pumpDiffGroup: TGroupBox;
     GroupBox1: TGroupBox;
-    BitBtn4: TBitBtn;
-    BitBtn5: TBitBtn;
-    BitBtn6: TBitBtn;
+    pbGetDiff: TBitBtn;
+    pbRecover: TBitBtn;
     pumperTable: TEdit;
-    Button1: TButton;
-    Button3: TButton;
+    pbCancelPumper: TButton;
+    pbAppendDiff: TButton;
     diffTbl: TTable;
     dsDiff: TDataSource;
     sourceGrid: TDBGrid;
@@ -184,6 +183,8 @@ type
     N7: TMenuItem;
     N8: TMenuItem;
     Image1: TImage;
+    btnClearLog: TBitBtn;
+    Image2: TImage;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -367,21 +368,31 @@ begin
   actVerifyTable.Enabled := False;
   actRebuildTable.Enabled := False;
   actUpgrade.Enabled := False;
-  pbCancel.Enabled := False;
   actValidateTable.Enabled := False;
+
+  pbGetDiff.Enabled := False;
+  pbAppendDiff.Enabled := False;
+  pbRecover.Enabled := False;
+  pbCancel.Enabled := False;
+  pbCancelPumper.Enabled := False;
 end;
 
 procedure TMainForm.SetTable(TableName: String);
 begin
   globals.sActiveDbName:=TableName;
-  pumperTable.Text:=  TableName;
+  pumperTable.Text:= lbTables.Items[lbTables.ItemIndex];
   tablelocation.Text := TableName;
 
   actVerifyTable.Enabled := True;
   actRebuildTable.Enabled := True;
   actUpgrade.Enabled := True;
   actValidateTable.Enabled := True;
+
+  pbGetDiff.Enabled := True;
+  pbAppendDiff.Enabled := True;
+  pbRecover.Enabled := True;
   pbCancel.Enabled := True;
+  pbCancelPumper.Enabled := True;
 end;
 
 procedure TMainForm.SetToPerformAction;
@@ -502,6 +513,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   sMasterPath :=  ExtractFilePath(ParamStr(0)) + 'MasterDb\' ;
+  sPumperPath := ExtractFilePath(ParamStr(0)) + 'PumpDB\' ;
   sDoctorDb:= ExtractFilePath(Application.EXEName) +'DoctorDB\' ;
 
   sMasterDbName:='';
@@ -510,14 +522,15 @@ begin
   if not DirectoryExists(sDoctorDb) then
   	ForceDirectories(sDoctorDb) ;
 
-  	sDoctorLog:= sDoctorDb + 'DoctorLog.Db';
+  if not DirectoryExists(sMasterPath) then
+  	ForceDirectories(sMasterPath) ;
 
-    sVerifyTbl:= sDoctorDb+ 'Verify.db';
-    sRebuildTbl:=sDoctorDb+ 'Rebuild.db';
-    sProblemTbl:=sDoctorDb+ 'Problem.db';
-    sKeyViolationTbl:=sDoctorDb +'KEYVIOL.DB';
+  if not DirectoryExists(sPumperPath) then
+  	ForceDirectories(sPumperPath) ;
 
-   doctorsession.Active := True;
+  sDoctorLog:= sDoctorDb + 'DoctorLog.Db';
+  doctorsession.Active := True;
+
   OpenDatabaseList;
   globals.BDEUtil := TBDEUtil.Create;
   globals.BDEUtil.PBHeader := PBHeader;
@@ -527,36 +540,34 @@ begin
 
   FieldUpdate:= TFieldUpdate.Create(self);
   pcTable.ActivePage:=tsStatus;
-
-
-
 end;
 
 procedure TMainForm.AliasComboChange(Sender: TObject);
 begin
-  doctorsession.GetTableNames(AliasCombo.Items[AliasCombo.ItemIndex], '*.*',
-    True, False, lbTables.Items);
+  doctorsession.GetTableNames(AliasCombo.Items[AliasCombo.ItemIndex], '*.*',True, False, lbTables.Items);
+
   ClearBars;
   ClearLabels;
   ClearTable;
+
   dbHelixDoctor.Connected := False;
   dbHelixDoctor.AliasName := AliasCombo.Items[AliasCombo.ItemIndex];
   dbHelixDoctor.Connected := True;
 
-   	tblLog.close;
-		tblLog.TableName:=sDoctorLog;
-   	tblLog.TableType:=ttParadox;
-  //if lbTables.Items.IndexOf(sDoctorLog)< 0 then
+  tblLog.close;
+  tblLog.TableName:=sDoctorLog;
+  tblLog.TableType:=ttParadox;
+
   if not FileExists(sDoctorLog) then
   begin
    with tblLog.FieldDefs do
    begin
    	Clear;
     	Add('Date',ftDateTime, 0, False);
-      Add('Duration',ftString, 10, False);
       Add('Action',ftString,20, FALSE);
     	Add('Result',ftString,100, FALSE);
-    	Add('Table',ftString, 255 ,FALSE);
+      Add('Table',ftString, 255 ,FALSE);
+      Add('Duration',ftString, 10, False);
    end;
    tblLog.CreateTable;
   end;
@@ -1475,7 +1486,6 @@ begin
   with tblLog do
   begin
     active:=false;
-//    exclusive:=true;
     EmptyTable;
     active:=true;
   end;
@@ -1597,7 +1607,6 @@ begin
   actUpgradeCheckedExecute(self);
   AliasComboChange(Sender);
   ClearBars;
-  Showmessage('Update Complete!');
   end;
 
 procedure TMainForm.actRebuildDatabaseExecute(Sender: TObject);
@@ -1605,7 +1614,6 @@ begin
   actCheckAllExecute(self);
   actRebuildCheckedExecute(self);
   ClearBars;
-  Showmessage('Rebuild Complete!');
 end;
 
 procedure TMainForm.actClearMasterDbExecute(Sender: TObject);
