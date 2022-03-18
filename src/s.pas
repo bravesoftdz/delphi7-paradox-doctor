@@ -185,6 +185,7 @@ type
     Image1: TImage;
     btnClearLog: TBitBtn;
     Image2: TImage;
+    BitBtn4: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
