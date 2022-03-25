@@ -7,7 +7,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, DB, BDE, TUtil32, DBTables, Menus, FileCtrl,
   Grids, DBCtrls, DBGrids, ActnList, Buttons, CheckLst,BatchMove,xautils,
-  FieldUpdate,JclFileUtils, ValEdit, bdeutil, jpeg;
+  FieldUpdate,JclFileUtils, ValEdit, bdeutil, jpeg, Log4D;
 
 type
 
@@ -185,7 +185,6 @@ type
     Image1: TImage;
     btnClearLog: TBitBtn;
     Image2: TImage;
-    BitBtn4: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -280,6 +279,7 @@ type
  
 var
   MainForm: TMainForm;
+  Logger: TLogLogger;
 
 implementation
 
@@ -528,6 +528,19 @@ begin
 
   if not DirectoryExists(sPumperPath) then
   	ForceDirectories(sPumperPath) ;
+
+  TLogBasicConfigurator.Configure;
+  TLogLogger.GetRootLogger.Level := All;
+  Logger := TLogLogger.GetLogger('myLogger');
+  Logger.addAppender(TLogFileAppender.Create('filelogger','DoctorDB/DoctorLog.log'));
+
+  Logger.Info('Cervelle Software - Database Doctor');
+  Logger.Info('-----------------------------------');
+  Logger.Info('------ BEGINNING LOG SESSION ------');
+  Logger.Info('-----------------------------------');
+  Logger.Error('Test');
+  Logger.Debug('Test');
+  Logger.Fatal('Test');
 
   sDoctorLog:= sDoctorDb + 'DoctorLog.Db';
   doctorsession.Active := True;
@@ -1855,9 +1868,9 @@ var
   stemp:string;
   AliasParams: TStringList;
 begin
-    sTemp := dbHelixDoctor.Directory;
+    //sTemp := dbHelixDoctor.Directory;
     //Log(sActiveDbName,'Deleting Locks:',sTemp);
-    FileDelete(sTemp + '\*.lck');
+    //FileDelete(sTemp + '\*.lck');
       //sTemp:= doctorSession.NetFileDir;
      // FileDelete(sTemp + '\*.lck');
       //sbInfo.SimpleText:=sTemp;
@@ -1866,9 +1879,6 @@ begin
       //sTemp:= doctorSession.PrivateDir;
       //sbInfo.SimpleText:=sTemp;
       //Log(sActiveDbName,'Deleting PrivateDir:',sTemp);
-
-
 end;
-
 end.
 
