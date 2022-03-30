@@ -15,7 +15,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Cervelle Software - Database Doctor';
+  Application.Title := 'Cervelle Software';
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TfrmBatchMove, frmBatchMove);
   Application.CreateForm(TAboutBox, AboutBox);

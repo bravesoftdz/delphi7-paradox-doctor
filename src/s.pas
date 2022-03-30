@@ -7,7 +7,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, DB, BDE, TUtil32, DBTables, Menus, FileCtrl,
   Grids, DBCtrls, DBGrids, ActnList, Buttons, CheckLst,BatchMove,xautils,
-  FieldUpdate,JclFileUtils, ValEdit, bdeutil, jpeg, Log4D;
+  FieldUpdate,JclFileUtils, ValEdit, bdeutil, jpeg, Log4D, CommCtrl;
 
 type
 
@@ -26,16 +26,10 @@ type
     menuMain: TMainMenu;
     File1: TMenuItem;
     Exit1: TMenuItem;
-    N1: TMenuItem;
-    Open1: TMenuItem;
-    Open2: TMenuItem;
     tblDiskDoctor: TTable;
     memuAliasses: TPopupMenu;
-    menuVerifyTable: TMenuItem;
-    menuRebuildTable: TMenuItem;
     Table1: TMenuItem;
     DataBase2: TMenuItem;
-    Verify2: TMenuItem;
     Rebuild2: TMenuItem;
     pcTable: TPageControl;
     tsStatus: TTabSheet;
@@ -44,7 +38,6 @@ type
     Label25: TLabel;
     Label26: TLabel;
     Label27: TLabel;
-    PBHeader: TProgressBar;
     PBIndexes: TProgressBar;
     PBData: TProgressBar;
     PBRebuild: TProgressBar;
@@ -77,10 +70,8 @@ type
     lbTables: TCheckListBox;
     actVerifyChecked: TAction;
     actRebuildChecked: TAction;
-    actVerifyChecked1: TMenuItem;
     RebuildChecked1: TMenuItem;
     actRebuildLevel2: TAction;
-    Batch1: TMenuItem;
     pbFiles: TProgressBar;
     Label2: TLabel;
     BatchMove1: TBatchMove;
@@ -89,8 +80,6 @@ type
     navTemp: TDBNavigator;
     Button2: TButton;
     actClearLog: TAction;
-    Tools: TMenuItem;
-    DeleteLog1: TMenuItem;
     actUpgrade: TAction;
     actCheckAll: TAction;
     actUnCheckAll: TAction;
@@ -100,8 +89,6 @@ type
     Label1: TLabel;
     AliasCombo: TComboBox;
     Splitter2: TSplitter;
-    N2: TMenuItem;
-    VerifyRebuild1: TMenuItem;
     actVerifyRebuildDatabase: TAction;
     ActionGroup: TGroupBox;
     BitBtn1: TBitBtn;
@@ -117,7 +104,6 @@ type
     FromTbl: TTable;
     ToTbl: TTable;
     OpenDialog: TOpenDialog;
-    Upgrade1: TMenuItem;
     N3: TMenuItem;
     UpgradeCheckedTables1: TMenuItem;       
     Upgrade2: TMenuItem;
@@ -127,7 +113,6 @@ type
     actRebuildDatabase: TAction;
     actSynchDatabase: TAction;
     actClearMasterDb: TAction;
-    ClearMasterDb1: TMenuItem;
     infoPanel: TPanel;
     InfoGroup: TGroupBox;
     tableLocation: TEdit;
@@ -165,26 +150,25 @@ type
     UpgradeFieldsGrid: TStringGrid;
     btnValidate: TBitBtn;
     actValidateTable: TAction;
-    Validate1: TMenuItem;
     actValidateDatabase: TAction;
-    Validate2: TMenuItem;
-    ValiadeChceckedTables1: TMenuItem;
     actValidateChecked: TAction;
     actPumperGetDiff: TAction;
     About1: TMenuItem;
     actAbout: TAction;
-    ClearLocks1: TMenuItem;
     actClearLocks: TAction;
     UpgradeStatus: TLabel;
     Panel8: TPanel;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N7: TMenuItem;
-    N8: TMenuItem;
     Image1: TImage;
     btnClearLog: TBitBtn;
-    Image2: TImage;
+    Tools3: TMenuItem;
+    ClearLogFile1: TMenuItem;
+    CkearLocks1: TMenuItem;
+    CopyNewTables1: TMenuItem;
+    Button1: TButton;
+    Button3: TButton;
+    pbNewTables: TBitBtn;
+    Image3: TImage;
+    PBHeader: TProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -235,6 +219,7 @@ type
     procedure Validate1Click(Sender: TObject);
     procedure actAboutExecute(Sender: TObject);
     procedure actClearLocksExecute(Sender: TObject);
+    procedure actNewTables(Sender: TObject);
   private
     sDoctorLog: String ;
     sVerifyTbl: String ;
@@ -248,6 +233,7 @@ type
     procedure OpenDatabaseList;
     procedure SetTableAndDir(ByDirectory: Boolean);
     procedure ClearBars;
+    procedure CompleteBars;
     procedure ClearLabels;
     procedure SetTableInfo; Overload;
     procedure SetTableInfo( TableInfo: TValueListEditor;  tableName: string); Overload;
@@ -338,18 +324,38 @@ begin
          break;
       end;
 	end;
+end;
 
+procedure TMainForm.CompleteBars;
+begin
+  pbFiles.Position := 100;
+  PBHeader.Position := 100;
+  PBIndexes.Position := 100;
+  PBData.Position := 100;
+  PBRebuild.Position := 100;
+  PBUpgrade.Position := 1000;
+  SendMessage (pbFiles.Handle, PBM_SETBARCOLOR, 0, clGreen);
+  SendMessage (PBHeader.Handle, PBM_SETBARCOLOR, 0, clGreen);
+  SendMessage (PBIndexes.Handle, PBM_SETBARCOLOR, 0, clGreen);
+  SendMessage (PBData.Handle, PBM_SETBARCOLOR, 0, clGreen);
+  SendMessage (PBRebuild.Handle, PBM_SETBARCOLOR, 0, clGreen);
+  SendMessage (PBUpgrade.Handle, PBM_SETBARCOLOR, 0, clGreen);
 end;
 
 procedure TMainForm.ClearBars;
 begin
 	PBFiles.Position :=0;
-  //sbInfo.SimpleText := '';
   PBHeader.Position := 0;
   PBIndexes.Position := 0;
   PBData.Position := 0;
   PBRebuild.Position := 0;
   PBUpgrade.Position := 0;
+  SendMessage (pbFiles.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
+  SendMessage (PBHeader.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
+  SendMessage (PBIndexes.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
+  SendMessage (PBData.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
+  SendMessage (PBRebuild.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
+  SendMessage (PBUpgrade.Handle, PBM_SETBARCOLOR, 0, CLR_DEFAULT);
 end;
 
 procedure TMainForm.ClearLabels;
@@ -376,6 +382,7 @@ begin
   pbRecover.Enabled := False;
   pbCancel.Enabled := False;
   pbCancelPumper.Enabled := False;
+  pbNewTables.Enabled := False;
 end;
 
 procedure TMainForm.SetTable(TableName: String);
@@ -394,6 +401,7 @@ begin
   pbRecover.Enabled := True;
   pbCancel.Enabled := True;
   pbCancelPumper.Enabled := True;
+  pbNewTables.Enabled := True;
 end;
 
 procedure TMainForm.SetToPerformAction;
@@ -538,9 +546,6 @@ begin
   Logger.Info('-----------------------------------');
   Logger.Info('------ BEGINNING LOG SESSION ------');
   Logger.Info('-----------------------------------');
-  Logger.Error('Test');
-  Logger.Debug('Test');
-  Logger.Fatal('Test');
 
   sDoctorLog:= sDoctorDb + 'DoctorLog.Db';
   doctorsession.Active := True;
@@ -798,7 +803,6 @@ begin
   except
     on EDatabaseError do
     begin
-      showmessage('Please select table first!');
     end;
   end;
 end;
@@ -872,9 +876,11 @@ begin
     FieldUpdate.RestructureTable(sActiveDbName, 'LEVEL', '7');
     TableRebuildIndexes( sActiveDbName);
     TableRebuild(sActiveDbName,sTemp);
-    ClearBars;
     ToTbl.Close;
+
+    CompleteBars;
     Showmessage('Rebuild Complete!');
+    ClearBars;
 end;
 
 function TMainForm.TableUpgrade(szTable:string;szMaster: String;var sResultString:string):integer;
@@ -1491,8 +1497,9 @@ begin
    end;
    end;
    pbFiles.Position:=pbFiles.Max;
-   ClearBars;
+   CompleteBars;
    Showmessage('Rebuild Complete!');
+   ClearBars;
 end;
 
 procedure TMainForm.actClearLogExecute(Sender: TObject);
@@ -1527,8 +1534,9 @@ begin
     TimerStart;
 		TableUpgrade(sActiveDbName, sMAsterDbName,sTemp);
     SetTableInfo;
-    ClearBars;
+    CompleteBars;
     Showmessage('Update Complete!');
+    ClearBars;
 end;
 
 procedure TMainForm.actCheckAllExecute(Sender: TObject);
@@ -1610,8 +1618,9 @@ begin
    end;
    end;
    pbFiles.Position:=pbFiles.Max;
-   ClearBars;
+   CompleteBars;
    Showmessage('Update Complete!');
+   ClearBars;
 end;
 
 procedure TMainForm.actUpgradeDatabaseExecute(Sender: TObject);
@@ -1697,8 +1706,6 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-
-//check for Autorun.
 if ParamCount > 0 then
 begin
   if FindCmdLineSwitch('UPGRADE') then
@@ -1717,11 +1724,6 @@ end;
 
 procedure TMainForm.pcTableChange(Sender: TObject);
 begin
-     if pcTable.ActivePage =  tsData then
-     begin
-      tblTemp.Open
-     end;
-
   if pcTable.ActivePage =  tsPumper then
       actPumperInit.Execute;
 end;
@@ -1840,7 +1842,7 @@ end;
 
 procedure TMainForm.Validate1Click(Sender: TObject);
 begin
- actCheckAllExecute(self);
+  actCheckAllExecute(self);
   actValidateCheckedExecute(self);
   AliasComboChange(Sender);
 end;
@@ -1879,6 +1881,16 @@ begin
       //sTemp:= doctorSession.PrivateDir;
       //sbInfo.SimpleText:=sTemp;
       //Log(sActiveDbName,'Deleting PrivateDir:',sTemp);
+end;
+
+procedure TMainForm.actNewTables(Sender: TObject);
+begin
+    ClearBars;
+    CopyNewTables(sMasterPath, dbHelixDoctor.Directory);
+    SetTableInfo;
+    CompleteBars;
+    Showmessage('New Tables Complete!');
+    ClearBars;
 end;
 end.
 
