@@ -162,7 +162,6 @@ type
     btnClearLog: TBitBtn;
     Tools3: TMenuItem;
     ClearLogFile1: TMenuItem;
-    CkearLocks1: TMenuItem;
     CopyNewTables1: TMenuItem;
     Button1: TButton;
     Button3: TButton;
