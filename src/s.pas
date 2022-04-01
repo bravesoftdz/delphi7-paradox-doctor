@@ -168,6 +168,7 @@ type
     pbNewTables: TBitBtn;
     Image3: TImage;
     PBHeader: TProgressBar;
+    ClearLCKFiles1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure AliasComboChange(Sender: TObject);
     procedure ByDirectBtnClick(Sender: TObject);
@@ -1867,19 +1868,39 @@ end;
 procedure TMainForm.actClearLocksExecute(Sender: TObject);
 var
   stemp:string;
+  flag1:boolean;
+  flag2:boolean;
   AliasParams: TStringList;
 begin
-    //sTemp := dbHelixDoctor.Directory;
-    //Log(sActiveDbName,'Deleting Locks:',sTemp);
-    //FileDelete(sTemp + '\*.lck');
-      //sTemp:= doctorSession.NetFileDir;
-     // FileDelete(sTemp + '\*.lck');
-      //sbInfo.SimpleText:=sTemp;
-      //Log(sActiveDbName,'Deleting Netdir:',sTemp);
-      //DeleteDirectory(stemp, false);
-      //sTemp:= doctorSession.PrivateDir;
-      //sbInfo.SimpleText:=sTemp;
-      //Log(sActiveDbName,'Deleting PrivateDir:',sTemp);
+  flag1 := false;
+  flag2 := false;
+
+  sTemp := dbHelixDoctor.Directory;
+  if deletefile(sTemp + 'PARADOX')
+  then flag1 := true
+  else flag1 := false;
+
+  if deletefile(sTemp + 'PDOXUSRS')
+  then flag2 := true
+  else flag2 := false;
+
+  if (flag1 = true) and (flag2 = true)
+  then ShowMessage('LCK Files Deleted!')
+  else ShowMessage('LCK Files NOT Deleted!');
+
+
+  // Try to delete the file again
+  //if deletefile(fileName)
+  //then ShowMessage(fileName+' deleted OK again!')
+  //else ShowMessage(fileName+' not deleted, error = '+ IntToStr(GetLastError));
+
+  //sTemp := dbHelixDoctor.Directory;
+  //Log(sActiveDbName,'Deleting Locks:',sTemp);
+  //FileDelete(sTemp + '*.lck');
+
+  //sTemp:= doctorSession.NetFileDir;
+  //Log(sActiveDbName,'Deleting DoctorDB Locks:',sTemp);
+  //FileDelete(sTemp + '*.lck');
 end;
 
 procedure TMainForm.actNewTables(Sender: TObject);
